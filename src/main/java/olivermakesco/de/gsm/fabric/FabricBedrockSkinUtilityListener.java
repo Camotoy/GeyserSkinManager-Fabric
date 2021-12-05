@@ -22,7 +22,6 @@ public class FabricBedrockSkinUtilityListener extends BedrockSkinUtilityListener
 
     @Override
     public void sendPluginMessage(byte[] payload, ServerPlayer player) {
-        GeyserSkinManager.LOGGER.info("Sending packet to player!");
         ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, FabricSkinEventListener.PacketID, new FriendlyByteBuf(Unpooled.wrappedBuffer(payload)));
     }
 

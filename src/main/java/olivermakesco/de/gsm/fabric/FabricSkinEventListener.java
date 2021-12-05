@@ -43,6 +43,10 @@ public class FabricSkinEventListener extends SkinEventListener<ServerPlayer, Min
     }
 
     public void onServerConnected(ServerGamePacketListenerImpl event, PacketSender packetSender, MinecraftServer server) {
+        if (!skinRetriever.isBedrockPlayer(event.getPlayer().getUUID())){
+            this.listener.onModdedPlayerConfirm(event.getPlayer());
+        }
+
         AtomicBoolean shouldApplyAt = new AtomicBoolean(true);
         if (showSkins) {
             PropertyMap propertyMap = event.player.getGameProfile().getProperties();
@@ -54,17 +58,12 @@ public class FabricSkinEventListener extends SkinEventListener<ServerPlayer, Min
         }
         boolean shouldApply = shouldApplyAt.get();
 
-        RawSkin skin = null;
-        if (shouldApply) {
-            skin = this.skinRetriever.getBedrockSkin(event.getPlayer().getUUID());
-            if (skin != null && showSkins) {
-                uploadOrRetrieveSkin(event.getPlayer(), null, skin);
-            }
+        RawSkin skin = this.skinRetriever.getBedrockSkin(event.getPlayer().getUUID());
+        if (skin != null && showSkins && shouldApply) {
+            uploadOrRetrieveSkin(event.getPlayer(), null, skin);
         }
         if (skin != null || skinRetriever.isBedrockPlayer(event.getPlayer().getUUID())) {
             this.listener.onBedrockPlayerJoin(event.getPlayer(), skin);
-        } else {
-            this.listener.onModdedPlayerConfirm(event.getPlayer());
         }
     }
 
