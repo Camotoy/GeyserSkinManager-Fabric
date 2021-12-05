@@ -47,16 +47,16 @@ public class FabricSkinEventListener extends SkinEventListener<ServerPlayer, Min
             this.listener.onModdedPlayerConfirm(event.getPlayer());
         }
 
-        AtomicBoolean shouldApplyAt = new AtomicBoolean(true);
+        boolean shouldApply = true;
         if (showSkins) {
-            PropertyMap propertyMap = event.player.getGameProfile().getProperties();
-            propertyMap.forEach((name, property) -> {
-                if (Objects.equals(property.getName(), "textures")) {
-                    shouldApplyAt.set(false);
+            Map<String,Collection<Property>> propertyMap = event.player.getGameProfile().getProperties().asMap();
+            for (String k : propertyMap.keySet()) {
+                if (Objects.equals(k, "textures")) {
+                    shouldApply = false;
+                    break;
                 }
-            });
+            }
         }
-        boolean shouldApply = shouldApplyAt.get();
 
         RawSkin skin = this.skinRetriever.getBedrockSkin(event.getPlayer().getUUID());
         if (skin != null && showSkins && shouldApply) {
