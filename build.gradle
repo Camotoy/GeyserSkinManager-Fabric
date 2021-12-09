@@ -52,10 +52,10 @@ dependencies {
 
 	implementation 'org.geysermc:core:2.0.0-SNAPSHOT'
 
-	implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.8"
-	shadow("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.8"){
-
-	}
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.0'
+	shadow 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.0'
+	implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.12.4"
+	shadow "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.12.4"
 }
 
 processResources {

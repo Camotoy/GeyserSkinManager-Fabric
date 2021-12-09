@@ -12,10 +12,11 @@ import org.apache.logging.log4j.Logger;
 public class GeyserSkinManager implements ModInitializer {
 	public static final Logger LOGGER = LogManager.getLogger("GeyserSkinManager-Fabric");
 	public static FabricSkinEventListener listener;
-	public static Configuration config = Configuration.create(FabricLoader.getInstance().getConfigDir());
-	public static boolean floodgatePresent = FloodgateUtil.isFloodgatePresent(config,LOGGER::warn);;
+	public static Configuration config;
 	@Override
 	public void onInitialize() {
+		config = Configuration.create(FabricLoader.getInstance().getConfigDir());
+		boolean floodgatePresent = FloodgateUtil.isFloodgatePresent(config,LOGGER::warn);
 		ServerLifecycleEvents.SERVER_STARTED.register((server) -> listener = new FabricSkinEventListener(FabricLoader.getInstance().getConfigDir(),LOGGER, !floodgatePresent, server));
 	}
 }
