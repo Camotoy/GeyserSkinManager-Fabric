@@ -6,24 +6,24 @@ import com.github.camotoy.geyserskinmanager.common.SkinEntry;
 import com.github.camotoy.geyserskinmanager.common.platform.SkinEventListener;
 import com.google.common.collect.Lists;
 import com.mojang.authlib.properties.Property;
-import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.datafixers.util.Pair;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
+import net.fabricmc.fabric.api.networking.v1.ServerLoginNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
-import net.minecraft.world.entity.player.Player;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import net.minecraft.world.item.ItemStack;
 import org.apache.logging.log4j.Logger;
@@ -33,19 +33,26 @@ public class FabricSkinEventListener extends SkinEventListener<ServerPlayer, Min
     public static ResourceLocation PacketID = new ResourceLocation(Constants.MOD_PLUGIN_MESSAGE_NAME);
     public FabricBedrockSkinUtilityListener listener;
 
-    public FabricSkinEventListener(File skinDatabaseLocation, Logger logger, boolean showSkins, MinecraftServer server) {
+    public FabricSkinEventListener(Path skinDatabaseLocation, Logger logger, boolean showSkins, MinecraftServer server) {
         super(skinDatabaseLocation, logger::warn);
         this.showSkins = showSkins;
 
         this.listener = new FabricBedrockSkinUtilityListener(this.database, this.skinRetriever, server);
 
         ServerPlayConnectionEvents.JOIN.register(this::onServerConnected);
+        ServerLoginNetworking.registerGlobalReceiver(ResourceLocation.tryParse(Constants.SKIN_PLUGIN_MESSAGE_NAME), this::onClientPacket);
+        ServerPlayConnectionEvents.DISCONNECT.register(this::onLeave);
+    }
+
+    private void onLeave(ServerGamePacketListenerImpl event, MinecraftServer server) {
+        this.listener.onPlayerLeave(event.getPlayer());
+    }
+
+    private void onClientPacket(MinecraftServer server, ServerLoginPacketListenerImpl event, boolean b, FriendlyByteBuf friendlyByteBuf, ServerLoginNetworking.LoginSynchronizer loginSynchronizer, PacketSender packetSender) {
+        this.listener.onModdedPlayerConfirm(server.getPlayerList().getPlayerByName(event.getUserName()));
     }
 
     public void onServerConnected(ServerGamePacketListenerImpl event, PacketSender packetSender, MinecraftServer server) {
-        if (!skinRetriever.isBedrockPlayer(event.getPlayer().getUUID())){
-            this.listener.onModdedPlayerConfirm(event.getPlayer());
-        }
 
         boolean shouldApply = true;
         if (showSkins) {

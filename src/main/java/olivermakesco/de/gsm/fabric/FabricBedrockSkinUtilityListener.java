@@ -5,10 +5,10 @@ import com.github.camotoy.geyserskinmanager.common.platform.BedrockSkinUtilityLi
 import com.github.camotoy.geyserskinmanager.common.skinretriever.BedrockSkinRetriever;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
 
 import java.util.UUID;
 
@@ -22,7 +22,7 @@ public class FabricBedrockSkinUtilityListener extends BedrockSkinUtilityListener
 
     @Override
     public void sendPluginMessage(byte[] payload, ServerPlayer player) {
-        ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, FabricSkinEventListener.PacketID, new FriendlyByteBuf(Unpooled.wrappedBuffer(payload)));
+        ServerPlayNetworking.send(player, FabricSkinEventListener.PacketID, new FriendlyByteBuf(Unpooled.wrappedBuffer(payload)));
     }
 
     @Override
