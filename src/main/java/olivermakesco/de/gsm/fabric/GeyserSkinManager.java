@@ -15,7 +15,7 @@ public class GeyserSkinManager implements ModInitializer {
 	public static Configuration config;
 	@Override
 	public void onInitialize() {
-		config = Configuration.create(FabricLoader.getInstance().getConfigDir());
+		config = FabricConfig.create(FabricLoader.getInstance().getConfigDir());
 		boolean floodgatePresent = FloodgateUtil.isFloodgatePresent(config,LOGGER::warn);
 		ServerLifecycleEvents.SERVER_STARTED.register((server) -> listener = new FabricSkinEventListener(FabricLoader.getInstance().getConfigDir(),LOGGER, !floodgatePresent, server));
 	}
