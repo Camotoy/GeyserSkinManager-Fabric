@@ -40,7 +40,7 @@ public class FabricSkinEventListener extends SkinEventListener<ServerPlayer, Min
         this.listener = new FabricBedrockSkinUtilityListener(this.database, this.skinRetriever, server);
 
         ServerPlayConnectionEvents.JOIN.register(this::onServerConnected);
-        ServerLoginNetworking.registerGlobalReceiver(ResourceLocation.tryParse(Constants.SKIN_PLUGIN_MESSAGE_NAME), this::onClientPacket);
+        ServerLoginNetworking.registerGlobalReceiver(ResourceLocation.tryParse(Constants.MOD_PLUGIN_MESSAGE_NAME), this::onClientPacket);
         ServerPlayConnectionEvents.DISCONNECT.register(this::onLeave);
     }
 
