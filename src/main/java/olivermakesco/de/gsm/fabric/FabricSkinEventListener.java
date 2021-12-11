@@ -40,7 +40,6 @@ public class FabricSkinEventListener extends SkinEventListener<ServerPlayer, Min
         this.listener = new FabricBedrockSkinUtilityListener(this.database, this.skinRetriever, server);
 
         ServerPlayConnectionEvents.JOIN.register(this::onServerConnected);
-        ServerLoginNetworking.registerGlobalReceiver(ResourceLocation.tryParse(Constants.MOD_PLUGIN_MESSAGE_NAME), this::onClientPacket);
         ServerPlayConnectionEvents.DISCONNECT.register(this::onLeave);
     }
 
@@ -48,11 +47,10 @@ public class FabricSkinEventListener extends SkinEventListener<ServerPlayer, Min
         this.listener.onPlayerLeave(event.getPlayer());
     }
 
-    private void onClientPacket(MinecraftServer server, ServerLoginPacketListenerImpl event, boolean b, FriendlyByteBuf friendlyByteBuf, ServerLoginNetworking.LoginSynchronizer loginSynchronizer, PacketSender packetSender) {
-        this.listener.onModdedPlayerConfirm(server.getPlayerList().getPlayerByName(event.getUserName()));
-    }
-
     public void onServerConnected(ServerGamePacketListenerImpl event, PacketSender packetSender, MinecraftServer server) {
+        if (!skinRetriever.isBedrockPlayer(event.getPlayer().getUUID())) {
+            listener.onModdedPlayerConfirm(event.getPlayer());
+        }
 
         boolean shouldApply = true;
         if (showSkins) {
